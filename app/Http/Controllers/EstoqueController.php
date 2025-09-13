@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\estoque;
+use App\Models\Estoque;
 use Illuminate\Http\Request;
 
 class EstoqueController extends Controller
@@ -12,7 +12,22 @@ class EstoqueController extends Controller
      */
     public function index()
     {
-        //
+        $registros = Estoque::all();
+        $contador = $registro->count();
+
+        if ($contador > 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Produtos encontrados com sucesso',
+                'data' => $registros,
+                'total' => $contador
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nenhum produto encontrado',    
+            ], 400);
+        }
     }
 
     /**
@@ -20,13 +35,41 @@ class EstoqueController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $validator = Validator::make($request->all(),[
+            'nomeprod' => 'required',
+            'marcaprod' => 'required',
+            'descprod' => 'required',
+            'qntprod' => 'required',
+            'dtentradaprod' => 'required',
+            'dtsaidaprod' => 'required',
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Registro inválido',
+            ], 400);
+        }
 
+            $registros = Estoque::create($request->all());
+            if ($registros) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Produto cadastrado com sucesso',
+                    'data' => $registros
+                ], 201);
+            }else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Falha ao cadastrar o produto'
+                ], 500);
+            }
+    }
+    //terminar a partir desta parte
     /**
      * Display the specified resource.
      */
-    public function show(estoque $estoque)
+    public function show(Estoque $estoque)
     {
         //
     }
@@ -34,7 +77,7 @@ class EstoqueController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, estoque $estoque)
+    public function update(Request $request, Estoque $estoque)
     {
         //
     }
@@ -42,7 +85,7 @@ class EstoqueController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(estoque $estoque)
+    public function destroy(Estoque $estoque)
     {
         //
     }
